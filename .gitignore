@@ -44,3 +44,14 @@ docs/*.jpg
 
 # research materials
 .ignore/
+
+# video files
+docs/*.mp4
+docs/*.mov
+docs/*.avi
+
+# session transcript (personal)
+docs/session-transcript.html
+
+# test artifacts
+/test-results/
