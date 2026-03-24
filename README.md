@@ -4,6 +4,22 @@ A production-grade print-on-demand storefront built with Next.js, Supabase, Stri
 
 ---
 
+## Screenshots
+
+**Home page — featured product grid**
+![Home page](public/screenshots/home.png)
+
+**Product detail — variant selector (size + color) and Add to Cart**
+![Product detail](public/screenshots/product-detail.png)
+
+**Search results**
+![Search](public/screenshots/search.png)
+
+**Shopping cart with item, quantity controls, and Checkout**
+![Cart](public/screenshots/cart-with-item.png)
+
+---
+
 ## What this store does
 
 Users can:
