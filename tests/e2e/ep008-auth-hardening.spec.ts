@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const TEST_EMAIL = "az9713@yahoo.com";
-const TEST_PASSWORD = "1234_abcd";
+const TEST_EMAIL = process.env.TEST_EMAIL ?? "test@example.com";
+const TEST_PASSWORD = process.env.TEST_PASSWORD ?? "changeme";
 
 // Helper: login and wait for auth state to propagate
 async function login(page: import("@playwright/test").Page) {

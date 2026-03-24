@@ -90,7 +90,7 @@ The `.or()` chain means "any of these messages appearing proves the form submitt
 
 ### Test 8: Login with valid credentials redirects to home
 
-**What it does:** Logs in with `az9713@yahoo.com` / `1234_abcd` and checks that the header changes to show "Account" or "Log out" (proving the user is authenticated).
+**What it does:** Logs in with a valid test account email and password, then checks that the header changes to show "Account" or "Log out" (proving the user is authenticated).
 
 **Why it matters:** This is the most important auth test. It proves the full login flow works: form submission → Supabase auth → session cookie set → header re-renders with logged-in state.
 
@@ -273,13 +273,13 @@ await expect(page).toHaveURL(/\/login/);
 | **Coverage of EP-001 scope** | Good | All pages, all auth forms, login/failure/redirect tested |
 | **Selector quality** | Good | Uses `getByRole`, `getByLabel`, `getByText` — accessibility-friendly, not brittle CSS selectors |
 | **External service handling** | Adequate | Handles Supabase rate limits, but could be more robust |
-| **Test isolation** | Weak | Tests 7 and 8 depend on a pre-existing Supabase account (az9713@yahoo.com). If that account is deleted, they break |
+| **Test isolation** | Weak | Tests 7 and 8 depend on a pre-existing Supabase account (hardcoded test email). If that account is deleted, they break |
 | **Speed** | Good | 18.8 seconds for 11 tests is reasonable |
 | **Determinism** | Adequate | Most tests are deterministic, but signup test depends on Supabase's current rate limit state |
 
 ### Biggest weakness
 
-The tests depend on a **real Supabase account** (`az9713@yahoo.com`). If you change the password, delete the account, or Supabase goes down, Tests 8 and 9 fail. In EP-007 (Testing Infrastructure), we should address this with either:
+The tests depend on a **real Supabase account** (hardcoded test email). If you change the password, delete the account, or Supabase goes down, Tests 8 and 9 fail. In EP-007 (Testing Infrastructure), we should address this with either:
 - A dedicated test Supabase project
 - Test user seeding before each run
 - Supabase's test/mock mode

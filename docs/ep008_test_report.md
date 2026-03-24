@@ -63,7 +63,7 @@ Same user logged in on two browsers. Not tested — would require two Playwright
 ## Issues discovered and resolved
 
 ### Issue: "Email not confirmed" blocking all login tests
-The `az9713@yahoo.com` account was created during EP-001 signup tests but the confirmation email was never clicked. Supabase blocks login for unconfirmed accounts.
+The test account was created during EP-001 signup tests but the confirmation email was never clicked. Supabase blocks login for unconfirmed accounts.
 
 **Fix:** Used the Supabase admin API (`auth.admin.updateUserById` with `email_confirm: true`) to manually confirm the email. This is a test-environment fix, not a production change.
 

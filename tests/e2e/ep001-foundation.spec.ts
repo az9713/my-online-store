@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const TEST_EMAIL = "az9713@yahoo.com";
-const TEST_PASSWORD = "1234_abcd";
+const TEST_EMAIL = process.env.TEST_EMAIL ?? "test@example.com";
+const TEST_PASSWORD = process.env.TEST_PASSWORD ?? "changeme";
 
 test.describe("EP-001: Foundation", () => {
   test("home page loads with correct title", async ({ page }) => {
