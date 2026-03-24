@@ -127,6 +127,42 @@ npm run test:all
 
 ---
 
+## Stripe CLI pipeline test
+
+One of the highlights of this project was using the **Stripe CLI** to verify the full payment-to-database pipeline without touching a browser.
+
+The pipeline under test:
+
+```
+stripe trigger checkout.session.completed
+    → Stripe creates test fixtures (product, price, checkout session, payment)
+    → Stripe fires webhook events to stripe listen
+    → stripe listen forwards via HTTP POST to localhost:3000/api/webhooks/stripe
+    → Webhook handler verifies HMAC-SHA256 signature
+    → Handler routes to checkout.session.completed handler
+    → Prisma writes new Order row to Supabase Postgres
+    → Cart marked "converted" (cleared)
+    → HTTP 200 returned to Stripe
+```
+
+Running it:
+
+```bash
+# Terminal 1 — forward Stripe events to the local webhook endpoint
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+
+# Terminal 2 — fire a real test event (Stripe creates the fixtures automatically)
+stripe trigger checkout.session.completed
+```
+
+The result: an order row appeared in the database with status `paid`, amount, and customer details — confirmed by querying Prisma directly. No browser, no manual card entry, no guessing whether the webhook fired.
+
+This technique proved valuable beyond initial setup. When a race condition between the Stripe redirect and the webhook caused orders to occasionally not appear on the success page, we used `stripe trigger` to reproduce the timing issue reliably and confirmed the fix (a `reconcileOrder()` fallback in `src/app/order/success/page.tsx`) without needing a live checkout flow each time.
+
+Full walkthrough: `docs/stripe-cli-pipeline-test.md`
+
+---
+
 ## Database management
 
 ```bash
