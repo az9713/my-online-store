@@ -2,6 +2,8 @@
 
 A production-grade print-on-demand storefront built with Next.js, Supabase, Stripe, and Printify. The application is **fully functioning** for all core shopping flows — browse, search, cart, checkout, and order history — running locally and ready for deployment.
 
+> **Security audit completed 2026-03-24.** A full OWASP-aligned sweep was run across all API routes, webhooks, auth flows, and configuration. 13 findings identified (1 critical, 4 high, 5 medium, 3 low) — all with fixes. See [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md).
+
 ---
 
 ## Screenshots
