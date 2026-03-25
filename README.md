@@ -71,7 +71,7 @@ The back end:
 - 182 automated tests (51 unit + 131 E2E across Chromium, Firefox, WebKit)
 - WCAG 2.1 AA accessibility (axe-core scans pass on all pages)
 - SEO: sitemap, robots.txt, Open Graph tags, structured data
-- Security: CSP headers, CSRF handling, rate limiting on auth
+- Security: X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy headers; HMAC-SHA256 webhook verification
 - CI/CD: GitHub Actions + Vercel configuration ready
 
 **What requires external accounts/keys to activate:**
@@ -262,6 +262,34 @@ The starting point was a specification document for a Printify + Shopify storefr
 - SEO title duplication ("Page | Merch Store | Merch Store") caused by root layout template applying a second suffix — fixed by using bare titles in page metadata
 
 The final result is a complete, tested, accessible storefront. It is not a toy or prototype — the architecture handles real authentication, real payment flows, real webhook verification, and real database persistence. The only thing between this codebase and a live store is connecting three external services (Stripe, Printify, Vercel) and adding their API keys.
+
+---
+
+## Security audit
+
+After the initial build, the codebase was put through a full security sweep using Claude Code in plan mode.
+
+**The prompt used:**
+
+> *"Run a deep OWASP security sweep of the full app, all APIs and any internal services. Report in descending severity and suggest solutions."*
+
+This prompt was inspired by:
+- The YouTube video **"I Tried Security Audit Code Review Skills/Prompts in Claude Code"** by John Kim — [watch here](https://www.youtube.com/watch?v=PDrm3Afuejg)
+- A post by **Arvid Kahl** on X sharing security audit prompting techniques — [view post](https://x.com/arvidkahl/status/2032947136199884883?s=20)
+
+The audit covered all API routes, webhook handlers, auth flows, frontend input handling, cookie configuration, HTTP response headers, error handling, and dependency configuration. The full report — including a developer-friendly glossary, attack scenarios for each finding, and copy-paste fixes — is in [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md).
+
+**Summary of findings (13 total):**
+
+| Severity | Count | Examples |
+|----------|-------|---------|
+| Critical | 1 | `/api/sync/printify` has zero authentication — open to anyone |
+| High | 4 | Rate limiter is dead code; Zod validation schemas unused; no CSP or HSTS headers |
+| Medium | 5 | Open redirect in auth callback; full customer PII stored in webhook logs; weak DB password |
+| Low | 3 | No CSRF protection; anonymous cart merge never called; `@types/*` in prod deps |
+| Info | 13 | Things done correctly: HMAC webhook verification, all-Prisma queries (no SQL injection), no `eval`/`innerHTML`, correct cookie flags |
+
+The audit surfaced a pattern common in fast-built codebases: **security infrastructure was written but never wired**. A Zod validation library, an error sanitisation handler, and a rate limiter all existed in the codebase but none were imported by the actual route handlers. The fixes for most HIGH-severity findings are already written — they just need to be connected.
 
 ---
 
